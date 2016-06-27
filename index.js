@@ -107,7 +107,7 @@ function sendGenericMessage(sender) {
                     }],
                 }, {
                     "title": "Chatbots FAQ",
-                    "subtitle": "Aking the Deep Questions",
+                    "subtitle": "Asking the Deep Questions",
                     "image_url": "https://tctechcrunch2011.files.wordpress.com/2016/04/facebook-chatbots.png?w=738",
                     "buttons": [{
                         "type": "postback",
@@ -124,7 +124,7 @@ function sendGenericMessage(sender) {
                     }],
                 },  {
                     "title": "Learning More",
-                    "subtitle": "Aking the Deep Questions",
+                    "subtitle": "Asking the Deep Questions",
                     "image_url": "http://www.brandknewmag.com/wp-content/uploads/2015/12/cortana.jpg",
                     "buttons": [{
                         "type": "postback",
