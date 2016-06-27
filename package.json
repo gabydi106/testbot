@@ -1,0 +1,31 @@
+{
+  "name": "echobot",
+  "version": "1.0.0",
+  "description": "testbot for messenger",
+  "main": "index.js",
+  "scripts": {
+    "test": "testbot"
+	"start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gabydi106/echobot.git"
+  },
+  "keywords": [
+    "echobot",
+    "chatbot",
+    "messenger",
+    "test"
+  ],
+  "author": "Gaby Di",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gabydi106/echobot/issues"
+  },
+  "homepage": "https://github.com/gabydi106/echobot#readme",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "request": "^2.72.0"
+  }
+}
