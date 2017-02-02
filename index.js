@@ -1,165 +1,101 @@
-var express = require('express')
-var bodyParser = require('body-parser')
-var request = require('request')
-var app = express()
+var express = require('express');
+var bodyParser = require('body-parser');
+var request = require('request');
+var app = express();
 
-app.set('port', (process.env.PORT || 5000))
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
+app.listen((process.env.PORT || 3000));
 
-// Process application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({extended: false}))
-
-// Process application/json
-app.use(bodyParser.json())
-
-// for Facebook verification
-app.get('/webhook/', function (req, res) {
-    if (req.query['hub.verify_token'] === 'testbot_verify_token') {
-        res.send(req.query['hub.challenge'])
-    }
-    res.send('Error, wrong token')
-})
-
-
-// Index route
+// Server frontpage
 app.get('/', function (req, res) {
-    res.send('Hello world, I am a chat bot')
-	//res.send(req.query['hub.challenge'])
-})
+    res.send('This is TestBot Server');
+});
 
+// Facebook Webhook
+app.get('/webhook', function (req, res) {
+    if (req.query['hub.verify_token'] === 'testbot_verify_token') {
+        res.send(req.query['hub.challenge']);
+    } else {
+        res.send('Invalid verify token');
+    }
+});
 
-// Spin up the server
-app.listen(app.get('port'), function() {
-    console.log('running on port', app.get('port'))
-})
-
-
-// API End Point - added by Stefan
-
-app.post('/webhook/', function (req, res) {
-    messaging_events = req.body.entry[0].messaging
-    for (i = 0; i < messaging_events.length; i++) {
-        event = req.body.entry[0].messaging[i]
-        sender = event.sender.id
+// handler receiving messages
+app.post('/webhook', function (req, res) {
+    var events = req.body.entry[0].messaging;
+    for (i = 0; i < events.length; i++) {
+        var event = events[i];
         if (event.message && event.message.text) {
-            text = event.message.text
-            if (text === 'hi') {
-                sendGenericMessage(sender)
-                continue
+            if (!kittenMessage(event.sender.id, event.message.text)) {
+                sendMessage(event.sender.id, {text: "Echo: " + event.message.text});
             }
-            sendTextMessage(sender, "parrot: " + text.substring(0, 200))
-        }
-        if (event.postback) {
-            text = JSON.stringify(event.postback)
-            sendTextMessage(sender, "Postback received: "+text.substring(0, 200), token)
-            continue
+        } else if (event.postback) {
+            console.log("Postback received: " + JSON.stringify(event.postback));
         }
     }
-    res.sendStatus(200)
-})
+    res.sendStatus(200);
+});
 
-var token = "EAAD33ppGVX4BAOeBDB0hEcbNWYBSDXvehnVMMhhJAGXkePKEhvz4CkNnMlsMZA8c64uDIoxi5A74wvI1WltUKwfejZCikoQBkRMaAywDhkEvoX0Ttkx7Ir11z4E8rZB6F0BJMO2ZB1rHUnaUodFO2lSMwJ5TMbx48i7HwRp7UAZDZD"
-
-// function to echo back messages - added by Stefan
-
-function sendTextMessage(sender, text) {
-    messageData = {
-        text:text
-    }
+// generic function sending messages
+function sendMessage(recipientId, message) {
     request({
         url: 'https://graph.facebook.com/v2.6/me/messages',
-        qs: {access_token:token},
+        qs: {access_token: process.env.PAGE_ACCESS_TOKEN},
         method: 'POST',
         json: {
-            recipient: {id:sender},
-            message: messageData,
+            recipient: {id: recipientId},
+            message: message,
         }
     }, function(error, response, body) {
         if (error) {
-            console.log('Error sending messages: ', error)
+            console.log('Error sending message: ', error);
         } else if (response.body.error) {
-            console.log('Error: ', response.body.error)
+            console.log('Error: ', response.body.error);
         }
-    })
-}
+    });
+};
 
-
-// Send an test message back as two cards.
-
-function sendGenericMessage(sender) {
-    messageData = {
-        "attachment": {
-            "type": "template",
-            "payload": {
-                "template_type": "generic",
-                "elements": [{
-                    "title": "Ai Chat Bot Communities",
-                    "subtitle": "Communities to Follow",
-                    "image_url": "http://1u88jj3r4db2x4txp44yqfj1.wpengine.netdna-cdn.com/wp-content/uploads/2016/04/chatbot-930x659.jpg",
-                    "buttons": [{
-                        "type": "web_url",
-                        "url": "https://www.facebook.com/groups/aichatbots/",
-                        "title": "FB Chatbot Group"
-                    }, {
-                        "type": "web_url",
-                        "url": "https://www.reddit.com/r/Chat_Bots/",
-                        "title": "Chatbots on Reddit"
-                    },{
-                        "type": "web_url",
-                        "url": "https://twitter.com/aichatbots",
-                        "title": "Chatbots on Twitter"
-                    }],
-                }, {
-                    "title": "Chatbots FAQ",
-                    "subtitle": "Asking the Deep Questions",
-                    "image_url": "https://tctechcrunch2011.files.wordpress.com/2016/04/facebook-chatbots.png?w=738",
-                    "buttons": [{
-                        "type": "postback",
-                        "title": "What's the benefit?",
-                        "payload": "Chatbots make content interactive instead of static",
-                    },{
-                        "type": "postback",
-                        "title": "What can Chatbots do",
-                        "payload": "One day Chatbots will control the Internet of Things! You will be able to control your homes temperature with a text",
-                    }, {
-                        "type": "postback",
-                        "title": "The Future",
-                        "payload": "Chatbots are fun! One day your BFF might be a Chatbot",
-                    }],
-                },  {
-                    "title": "Learning More",
-                    "subtitle": "Asking the Deep Questions",
-                    "image_url": "http://www.brandknewmag.com/wp-content/uploads/2015/12/cortana.jpg",
-                    "buttons": [{
-                        "type": "postback",
-                        "title": "AIML",
-                        "payload": "Checkout Artificial Intelligence Mark Up Language. Its easier than you think!",
-                    },{
-                        "type": "postback",
-                        "title": "Machine Learning",
-                        "payload": "Use python to teach your maching in 16D space in 15min",
-                    }, {
-                        "type": "postback",
-                        "title": "Communities",
-                        "payload": "Online communities & Meetups are the best way to stay ahead of the curve!",
-                    }],
-                }]  
-            } 
+// send rich message with kitten
+function kittenMessage(recipientId, text) {
+    
+    text = text || "";
+    var values = text.split(' ');
+    
+    if (values.length === 3 && values[0] === 'kitten') {
+        if (Number(values[1]) > 0 && Number(values[2]) > 0) {
+            
+            var imageUrl = "https://placekitten.com/" + Number(values[1]) + "/" + Number(values[2]);
+            
+            message = {
+                "attachment": {
+                    "type": "template",
+                    "payload": {
+                        "template_type": "generic",
+                        "elements": [{
+                            "title": "Kitten",
+                            "subtitle": "Cute kitten picture",
+                            "image_url": imageUrl ,
+                            "buttons": [{
+                                "type": "web_url",
+                                "url": imageUrl,
+                                "title": "Show kitten"
+                                }, {
+                                "type": "postback",
+                                "title": "I like this",
+                                "payload": "User " + recipientId + " likes kitten " + imageUrl,
+                            }]
+                        }]
+                    }
+                }
+            };
+    
+            sendMessage(recipientId, message);
+            
+            return true;
         }
     }
-    request({
-        url: 'https://graph.facebook.com/v2.6/me/messages',
-        qs: {access_token:token},
-        method: 'POST',
-        json: {
-            recipient: {id:sender},
-            message: messageData,
-        }
-    }, function(error, response, body) {
-        if (error) {
-            console.log('Error sending messages: ', error)
-        } else if (response.body.error) {
-            console.log('Error: ', response.body.error)
-        }
-    })
-}
-
+    
+    return false;
+    
+};
