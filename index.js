@@ -22,8 +22,8 @@ app.get('/webhook/', function (req, res) {
 
 // Index route
 app.get('/', function (req, res) {
-    //res.send('Hello world, I am a chat bot')
-	res.send(req.query['hub.challenge'])
+    res.send('Hello world, I am a chat bot')
+	//res.send(req.query['hub.challenge'])
 })
 
 
