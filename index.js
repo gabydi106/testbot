@@ -11,11 +11,6 @@ app.use(bodyParser.urlencoded({extended: false}))
 // Process application/json
 app.use(bodyParser.json())
 
-// Index route
-app.get('/', function (req, res) {
-    res.send('Hello world, I am a chat bot')
-})
-
 // for Facebook verification
 app.get('/webhook/', function (req, res) {
     if (req.query['hub.verify_token'] === 'testbot_verify_token') {
@@ -23,6 +18,14 @@ app.get('/webhook/', function (req, res) {
     }
     res.send('Error, wrong token')
 })
+
+
+// Index route
+app.get('/', function (req, res) {
+    //res.send('Hello world, I am a chat bot')
+	res.send(req.query['hub.challenge'])
+})
+
 
 // Spin up the server
 app.listen(app.get('port'), function() {
