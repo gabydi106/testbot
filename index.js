@@ -1,25 +1,25 @@
-var express = require("express");
-var request = require("request");
-var bodyParser = require("body-parser");
-
+var express = require('express');
+var bodyParser = require('body-parser');
+var request = require('request');
 var app = express();
+
+
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
-app.listen((process.env.PORT || 5000));
+app.listen((process.env.PORT || 1337), function () {
+  console.log('app listening on port 1337');
+});
 
-// Server index page
-app.get("/", function (req, res) {
-  res.send("Deployed!");
+// Server default URL
+app.get('/', function (req, res) {
+    res.send('This is a Bot Server');
 });
 
 // Facebook Webhook
-// Used for verification
-app.get("/webhook", function (req, res) {
-  if (req.query["hub.verify_token"] === "this_is_my_token") {
-    console.log("Verified webhook");
-    res.status(200).send(req.query["hub.challenge"]);
-  } else {
-    console.error("Verification failed. The tokens do not match.");
-    res.sendStatus(403);
-  }
+app.get('/webhook', function (req, res) {
+    if (req.query['hub.verify_token'] === 'mybot_verify_token') {
+        res.send(req.query['hub.challenge']);
+    } else {
+        res.send('Invalid verify token');
+    }
 });
