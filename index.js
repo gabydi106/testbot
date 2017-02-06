@@ -27,22 +27,21 @@ app.get('/webhook', function (req, res) {
 /**
  *  POST handler to send and receive messages
  */ 
-app.post('/webhook/', function (req, res) {
-    let messaging_events = req.body.entry[0].messaging
-    for (let i = 0; i < messaging_events.length; i++) {
-        let event = req.body.entry[0].messaging[i]
-        let sender = event.sender.id
-        if (event.message && event.message.text) {
+app.post('/webhook', function (req, res) {
+    var events = req.body.entry[0].messaging;
+    for (i = 0; i < events.length; i++) {
+        var event = events[i];
+         if (event.message && event.message.text) {
             let text = event.message.text
             if (text === 'Generic') {
                 sendGenericMessage(sender)
                 continue
             }
-            sendTextMessage(sender, "Echo: " + text.substring(0, 200))
+            sendTextMessage(sender, "Text received, echo: " + text.substring(0, 200))
         }
     }
-    res.sendStatus(200)
-})
+    res.sendStatus(200);
+});
 
 /**
  *  function to send messages
