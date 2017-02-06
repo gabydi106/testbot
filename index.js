@@ -80,7 +80,7 @@ function kittenMessage(recipientId, text) {
                         "elements": [{
                             "title": "Kitten",
                             "subtitle": "Cute kitten picture",
-                            "image_url": https://a.dilcdn.com/bl/wp-content/uploads/sites/8/2013/09/Gibson.jpg ,
+                            "image_url": "https://a.dilcdn.com/bl/wp-content/uploads/sites/8/2013/09/Gibson.jpg",
                             "buttons": [{
                                 "type": "web_url",
                                 "url": imageUrl,
