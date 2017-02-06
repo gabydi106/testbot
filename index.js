@@ -59,6 +59,3 @@ function sendMessage(recipientId, message) {
         }
     });
 };
-
-
-
