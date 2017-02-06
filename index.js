@@ -34,8 +34,8 @@ app.post('/webhook', function (req, res) {
         if (event.message && event.message.text) {
 			
 			if (text === 'Generic') {
-                sendGenericMessage(event.sender.id)
-                continue
+                sendGenericMessage(event.sender.id);
+                continue;
             }
 			
 			sendMessage(event.sender.id, {text: "Echo: " + event.message.text});
