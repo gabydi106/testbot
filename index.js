@@ -4,6 +4,9 @@ var request = require('request');
 var app = express();
 
 
+var ElizaBot = require('./elizabot');
+var eliza = new ElizaBot();
+
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.listen((process.env.PORT || 1337), function () {
@@ -32,9 +35,12 @@ app.post('/webhook', function (req, res) {
     for (i = 0; i < events.length; i++) {
         var event = events[i];
         if (event.message && event.message.text) {
-          
-            sendMessage(event.sender.id, {text: "Echo: " + event.message.text});
-        }
+            // get reply from eliza 
+            var reply = eliza.transform(event.message.text);
+
+            sendMessage(event.sender.id, {text: reply});
+    
+        } 
     }
     res.sendStatus(200);
 });
