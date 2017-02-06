@@ -33,7 +33,8 @@ app.post('/webhook', function (req, res) {
         var event = events[i];
         if (event.message && event.message.text) {  
 			if (!kittenMessage(event.sender.id, event.message.text)) {
-				sendMessage(event.sender.id, {text: "Echo: " + event.message.text});
+				//sendMessage(event.sender.id, {text: "Echo: " + event.message.text});
+				customizedMessage(event.sender.id, event.message.text);
 			}
 		}
     }
@@ -108,7 +109,7 @@ function kittenMessage(recipientId, text) {
 
 
 // send rich message customized
-function kittenMessage(recipientId, text) {
+function customizedMessage(recipientId, text) {
 
     text = text || "";
     var values = text.split(' ');
