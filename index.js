@@ -1,52 +1,47 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var request = require('request');
-
-var ElizaBot = require('./elizabot');
-
 var app = express();
-var eliza = new ElizaBot();
+
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
-app.listen((process.env.PORT || 3000), function () {
-  console.log('app listening on port 3000');
+app.listen((process.env.PORT || 1337), function () {
+  console.log('app listening on port 1337');
 });
 
-
-// Server frontpage
+// Server default URL
 app.get('/', function (req, res) {
-    res.send('This is TestBot Server');
+    res.send('This is a Bot Server');
 });
-
 
 // Facebook Webhook
 app.get('/webhook', function (req, res) {
-    if (req.query['hub.verify_token'] === 'testbot_verify_token') {
+    if (req.query['hub.verify_token'] === 'mybot_verify_token') {
         res.send(req.query['hub.challenge']);
     } else {
         res.send('Invalid verify token');
     }
 });
 
-// handler receiving messages
+/**
+ *  POST handler to send and receive messages
+ */ 
 app.post('/webhook', function (req, res) {
     var events = req.body.entry[0].messaging;
     for (i = 0; i < events.length; i++) {
         var event = events[i];
         if (event.message && event.message.text) {
-            // get reply from eliza 
-            var reply = eliza.transform(event.message.text);
-
-            sendMessage(event.sender.id, {text: reply});
-    
-        } 
+          
+            sendMessage(event.sender.id, {text: "Echo: " + event.message.text});
+        }
     }
     res.sendStatus(200);
 });
 
-
-// generic function sending messages
+/**
+ *  function to send messages
+ */ 
 function sendMessage(recipientId, message) {
     request({
         url: 'https://graph.facebook.com/v2.6/me/messages',
